@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
 class Habit(models.Model):
@@ -16,6 +17,7 @@ class Habit(models.Model):
     reward = models.CharField(max_length=255, null=True, blank=True)
     duration = models.PositiveIntegerField()  # In seconds
     is_public = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def clean(self):
         if self.reward and self.related_habit:
@@ -39,3 +41,11 @@ class Habit(models.Model):
     class Meta:
         verbose_name = "Habit"
         verbose_name_plural = "Habits"
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    telegram_id = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return f"Profile for {self.user.username}"
