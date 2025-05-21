@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -19,4 +19,5 @@ urlpatterns = [
     path('api/', include('habits.urls')),  # Подключаем маршруты приложения habits
     path('api-auth/', include('rest_framework.urls')),  # Для авторизации через DRF
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^$', schema_view.with_ui('swagger', cache_timeout=0), name='root-swagger'),
 ]

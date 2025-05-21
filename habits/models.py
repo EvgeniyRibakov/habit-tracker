@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from django.utils import timezone
 from django.contrib.auth.models import User
 
 
@@ -17,7 +16,7 @@ class Habit(models.Model):
     reward = models.CharField(max_length=255, null=True, blank=True)
     duration = models.PositiveIntegerField()  # In seconds
     is_public = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # Убрали default=timezone.now
 
     def clean(self):
         if self.reward and self.related_habit:

@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'habits',
-    'telegram_bot',  
+    'telegram_bot',
 ]
 
 MIDDLEWARE = [
