@@ -31,18 +31,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.6.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
-      - name: Copy project files to server
+      - name: Test SSH connection
+        run: ssh -v -o StrictHostKeyChecking=no <user>@<remote_host> "echo SSH connection successful"
+        env:
+          SSH_AUTH_SOCK: ${{ env.SSH_AUTH_SOCK }}
+
+      - name: List files before rsync
         run: |
           echo "Listing files in GitHub Actions runner before rsync:"
           ls -la
-          rsync -avzr -e "ssh -o StrictHostKeyChecking=no" --exclude '__pycache__' --exclude '.git' --exclude '.gitignore' --exclude '.env.sample' ./ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          echo "After rsync, listing contents of ${{ secrets.DEPLOY_DIR }}:"
-          ls -la ${{ secrets.DEPLOY_DIR }}
-          ls -la ${{ secrets.DEPLOY_DIR }}/config 2>/dev/null || echo "config directory not found"
-          EOF
+
+      - name: Deploy with rsync
+        run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" --delete ./ <user>@<remote_host>:<remote_path>
+        env:
+          SSH_AUTH_SOCK: ${{ env.SSH_AUTH_SOCK }}
