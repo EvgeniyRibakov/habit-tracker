@@ -38,18 +38,3 @@ jobs:
         uses: webfactory/ssh-agent@v0.6.0
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
-
-      - name: Test SSH connection
-        run: ssh -v -o StrictHostKeyChecking=no deploy@example.com "echo SSH connection successful"
-        env:
-          SSH_AUTH_SOCK: ${{ env.SSH_AUTH_SOCK }}
-
-      - name: List files before rsync
-        run: |
-          echo "Список файлов в GitHub Actions runner перед rsync:"
-          ls -la
-
-      - name: Deploy with rsync
-        run: rsync -avz -e "ssh -o StrictHostKeyChecking=no" --delete ./ deploy@example.com:/var/www/html
-        env:
-          SSH_AUTH_SOCK: ${{ env.SSH_AUTH_SOCK }}
