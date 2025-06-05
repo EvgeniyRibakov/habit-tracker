@@ -39,6 +39,16 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_KEY }}
 
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            cd ${{ secrets.DEPLOY_DIR }}
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --build
+            docker-compose ps
+          EOF
+
       - name: Copy project files to server
         run: |
           echo "Listing files in GitHub Actions runner before rsync:"
