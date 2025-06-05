@@ -41,11 +41,17 @@ jobs:
 
       - name: Copy project files to server
         run: |
-            echo "Listing files in GitHub Actions runner before rsync:"
-            ls -la
-            rsync -avzr -e "ssh -o StrictHostKeyChecking=no" --exclude '__pycache__' --exclude '.git' --exclude '.gitignore' --exclude '.env.sample' ./ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}
-            ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          echo "Listing files in GitHub Actions runner before rsync:"
+          ls -la
+          rsync -avzr -e "ssh -o StrictHostKeyChecking=no" --exclude '__pycache__' --exclude '.git' --exclude '.gitignore' --exclude '.env.sample' ./ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.DEPLOY_DIR }}
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             echo "After rsync, listing contents of ${{ secrets.DEPLOY_DIR }}:"
             ls -la ${{ secrets.DEPLOY_DIR }}
             ls -la ${{ secrets.DEPLOY_DIR }}/config 2>/dev/null || echo "config directory not found"
-            EOF
+            cd ${{ secrets.DEPLOY_DIR }}
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --build
+            echo "Docker containers status:"
+            docker-compose ps
+          EOF
